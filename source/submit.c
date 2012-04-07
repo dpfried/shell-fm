@@ -121,7 +121,7 @@ int submit(const char * user, const char * password) {
         strcat(command, title);
         strcat(command, "\" ");
         strcat(command, time);
-        if (system(command)) {
+        if (!system(command)) {
             if (retval == -1)
                 retval = 0;
         } else if (retval == 0)
