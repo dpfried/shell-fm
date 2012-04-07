@@ -108,6 +108,29 @@ int submit(const char * user, const char * password) {
 
 	snprintf(body, stepsize, "s=%s", value(& submission, "session"));
 	for(ntrack = 0; ntrack < qlength; ++ntrack) {
+
+        /* my stuff */
+        const char *artist = value(&(queue[ntrack]), "a");
+        const char *title  = value(&(queue[ntrack]), "t");
+        const char *time   = value(&(queue[ntrack]), "i");
+        char *base_str = "/home/dfried/scripts/scrobble.py \"";
+        char *command = (char*) malloc(strlen(artist) + strlen(title) + strlen(base_str) + strlen(time) + 7);
+        strcpy(command, base_str);
+        strcat(command, artist);
+        strcat(command, "\" \"");
+        strcat(command, title);
+        strcat(command, "\" ");
+        strcat(command, time);
+        if (system(command)) {
+            if (retval == -1)
+                retval = 0;
+        } else if (retval == 0)
+            retval = -1;
+
+
+        free(command);
+        base_str = 0;
+
 		unsigned pair;
 		for(pair = 0; pair < queue[ntrack].size; ++pair) {
 			char key[16], * encoded = NULL;
@@ -134,11 +157,13 @@ int submit(const char * user, const char * password) {
 
 	sliceq(qlength);
 
-	resp = fetch(value(& submission, "submissions"), NULL, body, NULL);
+	/*resp = fetch(value(& submission, "submissions"), NULL, body, NULL);*/
 
 	if(resp) {
+        /*
 		if(resp[0] && !strncmp(resp[0], "OK", 2))
 			retval = 0;
+            */
 
 		purge(resp);
 	}
